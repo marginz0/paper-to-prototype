@@ -20,23 +20,23 @@ export default function HomePage() {
     <main id="main-content">
       <section className="home-hero site-container">
         <div className="hero-copy">
-          <p className="eyebrow">Interactive research methods · Verified collection</p>
+          <p className="eyebrow">Interactive research methods · Verified + experimental</p>
           <h1>
             Don’t just read
             <br />
             the method. <em>Run it.</em>
           </h1>
           <p className="hero-intro">
-            Paper-to-Prototype turns foundational algorithms into grounded learning
-            laboratories—so you can change real parameters and watch each method
-            unfold, one decision at a time.
+            Explore three verified algorithm laboratories, or experimentally match an
+            arXiv paper’s central method to the exact trusted experience that can
+            explain it faithfully.
           </p>
           <div className="hero-actions">
-            <Link className="button button-primary" href="/lab/kmeans">
-              Open the k-Means lab <span aria-hidden="true">→</span>
+            <Link className="button button-primary" href={{ pathname: "/analyze" }}>
+              Analyze an arXiv paper <span aria-hidden="true">→</span>
             </Link>
             <Link className="text-link" href="/#laboratories">
-              View the collection <span aria-hidden="true">↓</span>
+              Explore verified labs <span aria-hidden="true">↓</span>
             </Link>
           </div>
         </div>
@@ -135,7 +135,8 @@ export default function HomePage() {
           <p className="eyebrow">A deliberate boundary</p>
           <p>
             Each laboratory couples deterministic algorithm code with a trusted,
-            purpose-built visualization. Nothing is generated or executed at runtime.
+            purpose-built visualization. Experimental analysis returns validated data
+            only; no model-generated code is compiled or executed.
           </p>
         </div>
       </section>

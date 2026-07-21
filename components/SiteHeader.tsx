@@ -15,8 +15,9 @@ export function SiteHeader() {
           </span>
         </Link>
         <nav className="header-nav" aria-label="Primary navigation">
+          <Link href={{ pathname: "/analyze" }}>Analyze</Link>
           <Link href="/#laboratories">Laboratories</Link>
-          <span className="edition-label">Build 02</span>
+          <span className="edition-label">Build Week / 2026</span>
         </nav>
       </div>
     </header>

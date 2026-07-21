@@ -23,6 +23,7 @@ import {
 
 const FEATURE_LABELS = ["x₁", "x₂", "x₃", "x₄"] as const;
 const PROJECTED_LABELS = ["d₁", "d₂", "d₃"] as const;
+const ATTENTION_COLOR_DOMAIN_MAX = 0.5;
 
 const PHASE_COPY: Record<
   AttentionPhase,
@@ -102,6 +103,14 @@ function maxIndex(values: readonly number[]): number {
       value > values[bestIndex] ? index : bestIndex,
     0,
   );
+}
+
+function attentionColorIntensity(weight: number): number {
+  const normalized = Math.min(
+    1,
+    Math.max(0, weight / ATTENTION_COLOR_DOMAIN_MAX),
+  );
+  return 0.07 + normalized * 0.72;
 }
 
 interface MatrixTableProps {
@@ -479,7 +488,7 @@ export function AttentionPlayground() {
                         {row.map((weight, keyIndex) => {
                           const isSelected = queryIndex === state.selectedQuery && keyIndex === state.selectedKey;
                           const isMaximum = keyIndex === rowMaximum;
-                          const intensity = 0.1 + weight * 0.9;
+                          const intensity = attentionColorIntensity(weight);
                           return (
                             <td key={`${queryIndex}-${keyIndex}`}>
                               <button
@@ -503,6 +512,16 @@ export function AttentionPlayground() {
                   })}
                 </tbody>
               </table>
+            </div>
+
+            <div
+              className="attention-color-key"
+              aria-label="Heatmap color scale. Lighter cells are closer to weight zero; darker cells approach weight 0.5 or above."
+            >
+              <span>0.000</span>
+              <i aria-hidden="true" />
+              <span>0.500+</span>
+              <em>Lighter → darker attention weight · fixed matrix-wide scale</em>
             </div>
 
             <div className="attention-inspector" aria-live="polite">

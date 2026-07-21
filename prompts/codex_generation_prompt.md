@@ -1,28 +1,40 @@
-# Retired Code-Generation Prompt
+# Retired Runtime Code-Generation Prompt
 
 This filename is retained to document a superseded prototype concept. It is not
-used by Milestone 1 and must not be wired into the deployed application.
+used by Milestone 3 and must never be wired into the deployed application.
 
-The original design asked a model to generate a `MethodPlayground.tsx` component
-and then execute it. The locked architecture explicitly prohibits that design.
-Paper-to-Prototype does not generate, compile, import, or execute model-produced
-TSX, JavaScript, HTML, or scripts.
+The original concept asked a model to generate a `MethodPlayground.tsx`
+component and execute it. The locked architecture permanently prohibits that
+design. Paper-to-Prototype does not generate, compile, import, or execute
+model-produced TSX, JavaScript, HTML, or scripts.
 
-## Replacement contract for a later milestone
+## What Codex does
 
-GPT-5.6 may return only schema-validated structured paper analysis as described
-in `prompts/extraction_prompt.md`. Trusted application code then:
+Codex was used as a development agent to implement, review, test, and polish the
+repository-owned deterministic k-Means, A*, and scaled dot-product Attention
+engines and their React learning experiences.
 
-1. validates the JSON against `schema/extraction_schema.json`;
-2. rejects unknown or unsupported method families;
-3. selects a statically imported, repository-owned algorithm and visualization
-   engine from an allowlisted registry; and
-4. constructs a bounded configuration using application-defined defaults and
-   limits.
+Codex is not part of the deployed runtime. The application contains no Codex
+SDK, does not ask Codex to generate a laboratory, and does not execute Codex
+output in a browser or server process.
 
-The model does not select an import path, author React code, supply a script, or
-override application limits. There is no fallback to generated code when no
-engine is compatible.
+## What GPT-5.6 does
+
+The experimental `/analyze` flow uses the official OpenAI JavaScript SDK
+Responses API. GPT-5.6 returns only structured educational method-analysis data
+under the contract documented in `prompts/extraction_prompt.md`.
+
+Trusted application code then:
+
+1. parses the output with a strict Zod schema;
+2. runs a separate family/compatibility/confidence/slug consistency validator;
+3. verifies that the returned arXiv ID equals the requested canonical ID;
+4. rejects unknown, unsupported, inconsistent, or low-confidence matches; and
+5. resolves a valid known slug through the statically compiled trusted registry.
+
+The model does not select an import path, author React code, supply an algorithm,
+create a registry entry, override application limits, or configure an arbitrary
+engine. There is no generated-code fallback when no laboratory is compatible.
 
 ## Permanent safety constraints
 
@@ -30,5 +42,6 @@ engine is compatible.
 - No `eval` or `new Function`
 - No runtime Babel or equivalent compilation
 - No arbitrary script or HTML execution
-- No model-controlled dynamic imports
+- No model-controlled dynamic imports or module paths
 - No iframe `srcdoc` rendering of model output
+- No treating paper instructions as application instructions

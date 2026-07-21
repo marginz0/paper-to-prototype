@@ -11,13 +11,16 @@
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
     "test:watch": "vitest",
+    "smoke:analyze": "node scripts/smoke-analyze-arxiv.mjs",
     "validate:schema": "node scripts/validate-schema.mjs",
     "scan:forbidden": "node scripts/check-forbidden-runtime.mjs"
   },
   "dependencies": {
     "next": "15.5.9",
+    "openai": "6.48.0",
     "react": "19.1.5",
-    "react-dom": "19.1.5"
+    "react-dom": "19.1.5",
+    "zod": "4.4.3"
   },
   "devDependencies": {
     "@eslint/eslintrc": "3.3.1",
