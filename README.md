@@ -13,11 +13,11 @@ Technical repository/package slug: `paper-to-prototype`.
 
 Repository: [github.com/marginz0/paper-to-prototype](https://github.com/marginz0/paper-to-prototype)
 
-The deployment and video references remain intentionally non-link placeholders
-until those deliverables are published:
+The production deployment is live. The video reference remains an intentional
+non-link placeholder until that deliverable is published:
 
 ```text
-LIVE_DEMO_URL: [PLACEHOLDER - add verified deployment URL]
+LIVE_DEMO_URL: https://paper-to-prototype.vercel.app
 YOUTUBE_DEMO_URL: [PLACEHOLDER - add public or unlisted video URL]
 ```
 

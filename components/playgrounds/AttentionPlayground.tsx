@@ -20,6 +20,10 @@ import {
   type AttentionState,
   type Matrix,
 } from "@/lib/algorithms/attention";
+import {
+  ATTENTION_STAGE_SUMMARIES,
+  describeSelectedAttention,
+} from "@/lib/attention-education";
 
 const FEATURE_LABELS = ["x₁", "x₂", "x₃", "x₄"] as const;
 const PROJECTED_LABELS = ["d₁", "d₂", "d₃"] as const;
@@ -266,6 +270,11 @@ export function AttentionPlayground() {
   const rowSum = selectedWeights.reduce((sum, weight) => sum + weight, 0);
   const entropy = calculateEntropy(selectedWeights);
   const phaseCopy = PHASE_COPY[state.phase];
+  const selectionDescription = describeSelectedAttention(
+    ATTENTION_TOKENS[state.selectedQuery],
+    ATTENTION_TOKENS[state.selectedKey],
+    selectedWeight,
+  );
 
   function selectCell(queryIndex: number, keyIndex: number) {
     setState((current) => setAttentionSelection(current, queryIndex, keyIndex));
@@ -297,6 +306,34 @@ export function AttentionPlayground() {
         </p>
       </div>
 
+      <section className="attention-start-here" aria-labelledby="attention-start-here-heading">
+        <div className="attention-start-copy">
+          <p className="eyebrow">Start here</p>
+          <h3 id="attention-start-here-heading">
+            Which words help the word we are processing?
+          </h3>
+          <p>
+            Attention answers that question for this fixed toy calculation. Each
+            heatmap row is the word looking for context; each column is a word it
+            may examine.
+          </p>
+          <ul>
+            <li>Darker cells mean more attention.</li>
+            <li>A value such as <strong>0.204</strong> means <strong>20.4%</strong>.</li>
+            <li>Each completed row totals approximately <strong>1</strong>, or <strong>100%</strong>.</li>
+          </ul>
+        </div>
+        <aside className="attention-try-this" aria-labelledby="attention-try-this-heading">
+          <p className="eyebrow" id="attention-try-this-heading">Try this</p>
+          <ol>
+            <li>Select a heatmap cell.</li>
+            <li>Read it as “row word pays attention to column word.”</li>
+            <li>Lower temperature to make attention more concentrated, then raise it to spread attention out.</li>
+            <li>Compare scaled and unscaled attention to see why scaling avoids overly sharp results.</li>
+          </ol>
+        </aside>
+      </section>
+
       <div className="playground-workbench attention-workbench">
         <aside className="control-panel attention-control-panel" aria-label="Attention controls">
           <div className="control-group">
@@ -309,7 +346,10 @@ export function AttentionPlayground() {
                   aria-current={phase.id === state.phase ? "step" : undefined}
                 >
                   <span>{String(index + 1).padStart(2, "0")}</span>
-                  {phase.label}
+                  <div>
+                    <strong>{phase.label}</strong>
+                    <small>{ATTENTION_STAGE_SUMMARIES[phase.id]}</small>
+                  </div>
                 </li>
               ))}
             </ol>
@@ -525,6 +565,11 @@ export function AttentionPlayground() {
             </div>
 
             <div className="attention-inspector" aria-live="polite">
+              <p className="attention-interpretation">
+                <span>Read this cell</span>
+                <strong>{selectionDescription}</strong>
+                <em>Fixed toy arithmetic, not learned language behavior.</em>
+              </p>
               <div className="attention-pair-summary">
                 <span>Selected relationship</span>
                 <strong>
@@ -567,7 +612,7 @@ export function AttentionPlayground() {
 
           <p className="sr-only" aria-live="polite">
             {phaseCopy.eyebrow}. Selected {ATTENTION_TOKENS[state.selectedQuery]} query
-            and {ATTENTION_TOKENS[state.selectedKey]} key. Weight {selectedWeight.toFixed(4)}.
+            and {ATTENTION_TOKENS[state.selectedKey]} key. {selectionDescription} Exact weight {selectedWeight.toFixed(4)}.
             The selected row sums to {rowSum.toFixed(6)}.
           </p>
         </div>

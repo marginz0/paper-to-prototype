@@ -2,11 +2,12 @@
 
 Repository/package slug: `paper-to-prototype`
 
-The repository reference is final. Deployment and video references remain
-plain-text placeholders until those deliverables are real and publicly reachable:
+The repository and production deployment references are final. The video
+reference remains a plain-text placeholder until that deliverable is real and
+publicly reachable:
 
 ```text
-LIVE_DEMO_URL: [PLACEHOLDER - add verified deployment URL]
+LIVE_DEMO_URL: https://paper-to-prototype.vercel.app
 YOUTUBE_DEMO_URL: [PLACEHOLDER - add public or unlisted video URL]
 PUBLIC_REPOSITORY_URL: https://github.com/marginz0/paper-to-prototype
 ```
@@ -142,8 +143,7 @@ matches before a trusted static lab link is exposed.
 
 ### Hosted path
 
-Use `LIVE_DEMO_URL` from the placeholder block after it has been replaced and
-verified. Until then, use the local path below.
+Use the verified production site at `https://paper-to-prototype.vercel.app`.
 
 ### Local path
 
@@ -230,7 +230,7 @@ live keyed analysis has been tested immediately before recording.
 ### External deliverables
 
 - [ ] Deploy the release candidate and verify every judge path in production.
-- [ ] Replace `LIVE_DEMO_URL` here with the verified public deployment URL.
+- [x] Record `https://paper-to-prototype.vercel.app` as the public deployment URL.
 - [ ] Confirm the public repository is reachable at `https://github.com/marginz0/paper-to-prototype`.
 - [ ] Add the verified live-demo URL to the README project-links block.
 - [ ] Record a video under 2:40 and upload it as public or unlisted on YouTube.

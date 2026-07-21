@@ -1704,6 +1704,63 @@ input {
   padding-bottom: 1.1rem;
 }
 
+.attention-start-here {
+  display: grid;
+  grid-template-columns: minmax(0, 1.2fr) minmax(250px, 0.8fr);
+  gap: 1.25rem;
+  margin: 0 0 1rem;
+  padding: 1.1rem 1.25rem;
+  border: 1px solid var(--line-strong);
+  background: #f7f3eb;
+}
+
+.attention-start-copy h3 {
+  max-width: 580px;
+  margin: 0.35rem 0 0;
+  font-family: var(--serif);
+  font-size: clamp(1.25rem, 2.2vw, 1.65rem);
+  font-weight: 600;
+  line-height: 1.16;
+  letter-spacing: -0.025em;
+}
+
+.attention-start-copy > p:not(.eyebrow) {
+  max-width: 650px;
+  margin: 0.65rem 0 0;
+  color: var(--ink-soft);
+  font-size: 0.71rem;
+  line-height: 1.55;
+}
+
+.attention-start-copy ul,
+.attention-try-this ol {
+  margin: 0.7rem 0 0;
+  padding-left: 1.15rem;
+  color: var(--ink-soft);
+  font-size: 0.65rem;
+  line-height: 1.55;
+}
+
+.attention-start-copy strong {
+  color: var(--ink);
+  font-family: var(--mono);
+  font-size: 0.93em;
+}
+
+.attention-try-this {
+  align-self: stretch;
+  padding: 0.1rem 0 0.1rem 1.15rem;
+  border-left: 1px solid var(--line-strong);
+}
+
+.attention-try-this ol {
+  padding-left: 1.2rem;
+}
+
+.attention-try-this li + li {
+  margin-top: 0.3rem;
+}
+
 .attention-phase-list {
   margin: 0.75rem 0 0;
   padding: 0;
@@ -1727,6 +1784,27 @@ input {
 .attention-phase-list li > span {
   font-family: var(--mono);
   font-size: 0.56rem;
+}
+
+.attention-phase-list li > div {
+  min-width: 0;
+}
+
+.attention-phase-list li strong,
+.attention-phase-list li small {
+  display: block;
+}
+
+.attention-phase-list li strong {
+  font-size: 0.64rem;
+  font-weight: 750;
+}
+
+.attention-phase-list li small {
+  margin-top: 0.12rem;
+  color: inherit;
+  font-size: 0.53rem;
+  line-height: 1.35;
 }
 
 .attention-phase-list li.is-complete {
@@ -2164,6 +2242,39 @@ input {
 
 .attention-inspector > *:last-child {
   border-right: 0;
+}
+
+.attention-interpretation {
+  grid-column: 1 / -1;
+  display: grid;
+  gap: 0.25rem;
+  border-right: 0;
+  border-bottom: 1px solid var(--line);
+  background: var(--cobalt-wash);
+}
+
+.attention-interpretation > span {
+  color: var(--cobalt-dark);
+  font-family: var(--mono);
+  font-size: 0.53rem;
+  font-weight: 750;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.attention-interpretation strong {
+  color: var(--ink);
+  font-family: var(--serif);
+  font-size: clamp(0.95rem, 1.7vw, 1.2rem);
+  font-weight: 600;
+  line-height: 1.35;
+}
+
+.attention-interpretation em {
+  color: var(--ink-soft);
+  font-size: 0.57rem;
+  font-style: normal;
+  line-height: 1.45;
 }
 
 .attention-pair-summary > span,
@@ -3222,6 +3333,18 @@ input {
 
   .attention-workbench {
     min-height: 0;
+  }
+
+  .attention-start-here {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+    padding: 1rem 0.85rem;
+  }
+
+  .attention-try-this {
+    padding: 0.85rem 0 0;
+    border-top: 1px solid var(--line-strong);
+    border-left: 0;
   }
 
   .attention-control-panel {
