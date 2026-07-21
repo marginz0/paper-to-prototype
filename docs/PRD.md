@@ -1,8 +1,8 @@
-# Paper-to-Prototype Product Requirements
+# Paper to Prototype Product Requirements
 
 ## Product statement
 
-Paper-to-Prototype is an education product that turns the algorithmic method
+Paper to Prototype is an education product that turns the algorithmic method
 inside a research paper into a grounded, interactive learning laboratory.
 Learners manipulate real parameters and observe each method step by step.
 
@@ -125,6 +125,8 @@ fails any structural or consistency check is unusable and cannot select a lab.
 - Return stable, sanitized error codes/messages; never expose provider errors,
   credentials, prompts, stack traces, or internal response bodies.
 - Set `store: false` on the Responses request.
+- Give the Node function 120 seconds, but cap the complete provider operation
+  across all attempts at 90 seconds with at most one SDK retry.
 - Serve the verified Attention record before consulting live-analysis quota.
 - Cache successful live results by canonical arXiv ID for five minutes in the
   current process.
@@ -164,9 +166,9 @@ The following remain prohibited:
   history, export, or code editor.
 - Process-local rate limiting is not a durable security boundary.
 
-## Milestone 3 acceptance criteria
+## Release-candidate acceptance criteria
 
-Milestone 3 is ready for review when:
+The release candidate is ready for review when:
 
 - all three labs and the gallery continue to work without a key;
 - `1706.03762` returns the verified Attention analysis without a key;

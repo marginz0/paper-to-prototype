@@ -7,4 +7,6 @@ coverage/
 *.tsbuildinfo
 npm-debug.log*
 .DS_Store
-
+.idea/
+artifacts/
+.vercel/

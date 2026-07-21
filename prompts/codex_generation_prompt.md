@@ -5,7 +5,7 @@ used by Milestone 3 and must never be wired into the deployed application.
 
 The original concept asked a model to generate a `MethodPlayground.tsx`
 component and execute it. The locked architecture permanently prohibits that
-design. Paper-to-Prototype does not generate, compile, import, or execute
+design. Paper to Prototype does not generate, compile, import, or execute
 model-produced TSX, JavaScript, HTML, or scripts.
 
 ## What Codex does

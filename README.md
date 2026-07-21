@@ -1,38 +1,70 @@
-# Paper-to-Prototype
+# Paper to Prototype
 
 > Don't just read the method. Run it.
 
-Paper-to-Prototype turns foundational algorithm papers into grounded,
-interactive learning laboratories. Learners change real parameters, advance a
-deterministic state machine, and inspect the calculation instead of receiving
+Paper to Prototype turns the algorithmic method inside a research paper into a
+grounded interactive learning lab. Learners manipulate real parameters, advance
+the method one step at a time, and inspect the calculation instead of receiving
 another static summary.
 
-Milestone 3 combines three verified, repository-owned laboratories with an
-experimental arXiv method-analysis flow. Model output is validated educational
-data only. It never becomes application code.
+Technical repository/package slug: `paper-to-prototype`.
 
-## What works without an API key
+## Project links
 
-All gallery laboratories run locally and in the browser without an OpenAI key:
+Repository: [github.com/marginz0/paper-to-prototype](https://github.com/marginz0/paper-to-prototype)
 
-| Laboratory | Source paper | Route |
+The deployment and video references remain intentionally non-link placeholders
+until those deliverables are published:
+
+```text
+LIVE_DEMO_URL: [PLACEHOLDER - add verified deployment URL]
+YOUTUBE_DEMO_URL: [PLACEHOLDER - add public or unlisted video URL]
+```
+
+Submission copy, judge steps, video timing, and the final external-deliverable
+checklist are in [docs/SUBMISSION.md](docs/SUBMISSION.md).
+
+## The problem
+
+Research papers communicate methods through dense prose, notation, and static
+figures. A reader can understand every sentence and still lack intuition for
+how state changes, which parameters matter, or why an algorithm reaches its
+result. Most paper tools respond with more text; Paper to Prototype makes the
+mechanics runnable.
+
+## Three verified laboratories
+
+All gallery labs run without an OpenAI API key. Their algorithms and
+visualizations are trusted repository code, not generated at runtime.
+
+| Laboratory | What the learner can inspect | Route |
 | --- | --- | --- |
-| k-Means clustering | MacQueen (1967) | [`/lab/kmeans`](http://localhost:3000/lab/kmeans) |
-| A* Search | Hart, Nilsson, and Raphael (1968) | [`/lab/astar`](http://localhost:3000/lab/astar) |
-| Scaled Dot-Product Attention | Vaswani et al. (2017) | [`/lab/attention`](http://localhost:3000/lab/attention) |
+| k-Means clustering | Assignment, centroid updates, `k`, convergence, and inertia | [`/lab/kmeans`](http://localhost:3000/lab/kmeans) |
+| A* Search | Frontier expansion, costs, heuristic weight, editing, and final path | [`/lab/astar`](http://localhost:3000/lab/astar) |
+| Scaled Dot-Product Attention | Q/K/V, scores, scaling, temperature, softmax, and output | [`/lab/attention`](http://localhost:3000/lab/attention) |
 
-The analyzer at [`/analyze`](http://localhost:3000/analyze) also includes one
-hand-reviewed result for **Attention Is All You Need** (`1706.03762`). That
-verified path does not call OpenAI, require a key, or consume live-analysis
-quota.
+The Attention lab uses fixed toy vectors and projection matrices. It demonstrates
+the mathematics; it is not a trained language model and does not claim learned
+linguistic understanding.
 
-Arbitrary arXiv analysis is experimental and requires a server-side
-`OPENAI_API_KEY`. It can identify only a faithful match to one of the three
-existing method families. It is not universal paper understanding, and an
-unsupported result is expected for unrelated methods or substantially different
-variants.
+## Experimental arXiv analysis
 
-## Run locally
+The analyzer at [`/analyze`](http://localhost:3000/analyze) asks whether a
+paper's central method faithfully matches one of the three existing labs.
+
+The hand-reviewed **Attention Is All You Need** result for `1706.03762` is the
+keyless judge path. It does not call OpenAI, require a key, or consume live
+quota. All three labs and this verified analysis remain usable with
+`OPENAI_API_KEY` empty.
+
+Arbitrary arXiv analysis is optional and requires a server-only key. GPT-5.6
+returns schema-constrained educational data, but a structurally valid live result
+can still be factually imperfect. Only the hand-reviewed cached record carries
+the **Verified analysis** label. Unrelated methods and substantially different
+variants should return unsupported; the analyzer is not universal paper
+understanding.
+
+## Local setup
 
 Requirements: Node.js 20 or newer and npm.
 
@@ -42,24 +74,26 @@ cp .env.example .env.local
 npm run dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000). You may leave
-`OPENAI_API_KEY` empty to use all three labs and the verified Attention analysis.
-Set it only when testing live analysis for another arXiv paper.
+Open [http://localhost:3000](http://localhost:3000).
 
 Environment variables:
 
-| Variable | Purpose |
-| --- | --- |
-| `OPENAI_API_KEY` | Server-only credential for arbitrary live analysis |
-| `OPENAI_MODEL` | Responses API model; defaults to `gpt-5.6` |
-| `SITE_URL` | Optional canonical deployment origin for absolute metadata |
+| Variable | Required? | Purpose |
+| --- | --- | --- |
+| `OPENAI_API_KEY` | Only for arbitrary live analysis | Server-only OpenAI credential |
+| `OPENAI_MODEL` | No | Responses API model; defaults to `gpt-5.6` |
+| `SITE_URL` | No | Canonical deployment origin for absolute metadata |
 
 Never prefix the key with `NEXT_PUBLIC_` or expose it to browser code.
+`SITE_URL` may be an HTTPS origin or host name. Invalid values are ignored; when
+it is empty, production may use the platform-provided Vercel production host,
+while the localhost metadata fallback is development-only. The app does not
+emit a guessed production deployment URL.
 
 ## Accepted arXiv input
 
-The analyzer accepts a modern arXiv ID, with an optional version suffix, or an
-exact HTTPS `arxiv.org` abstract/PDF URL. Examples:
+The analyzer accepts a modern arXiv ID, optional version suffix, or exact HTTPS
+`arxiv.org` abstract/PDF URL:
 
 ```text
 1706.03762
@@ -70,54 +104,72 @@ https://arxiv.org/pdf/1706.03762
 https://arxiv.org/pdf/1706.03762.pdf
 ```
 
-The server does not fetch a caller-selected URL. It validates the identifier and
-internally constructs canonical `https://arxiv.org/abs/...` and
-`https://arxiv.org/pdf/....pdf` URLs. Other hosts, protocols, credentials,
-ports, query strings, fragments, whitespace, and expanded paths are rejected.
+The server validates the identifier and constructs canonical record and PDF URLs
+internally. It rejects alternate domains, protocols, ports, credentials,
+queries, fragments, whitespace, malformed IDs, and expanded paths. It never
+forwards a caller-selected arbitrary URL.
 
-## Experimental analysis pipeline
+## Architecture and security
 
-1. A Node.js route accepts only a JSON body shaped as `{ "arxiv": "..." }`, with
-   a 1 KB body limit.
-2. Input is normalized to a canonical arXiv ID and internally constructed record
-   and PDF URLs.
-3. `1706.03762` is served from the hand-reviewed verified cache.
-4. Other IDs first check the short-lived process-local cache. A fresh cached
-   live result can be returned without a current API key.
-5. An uncached ID requires `OPENAI_API_KEY`, then passes the best-effort
-   process-local live-request limit.
-6. The official OpenAI JavaScript SDK sends the internally constructed external
-   PDF URL to the Responses API and requests GPT-5.6 structured output.
-7. A strict Zod contract rejects unknown or malformed fields. A separate
-   consistency validator rejects impossible family, compatibility, confidence,
-   and laboratory combinations.
-8. Trusted application code may link a supported result to one of three
-   statically registered labs. The model never chooses a module or creates UI.
+The deterministic lab path is:
 
-The route returns `Cache-Control: no-store`, sanitizes upstream errors, stores no
-paper or user history, and uses no database or authentication. Successful live
-results are cached in memory for five minutes. Live calls are limited, best
-effort, to five per hashed client in a rolling 15-minute window.
+```text
+typed catalog -> safe slug -> closed static registry
+  -> trusted React playground -> pure TypeScript engine -> repository-owned view
+```
 
-The limiter and live cache are process-local. Serverless cold starts reset them,
-and concurrent instances do not share state, so this is demo protection rather
-than a durable distributed abuse-control system.
+The optional analysis path is:
 
-## Code-generation boundary
+```text
+1 KB Node API request -> strict arXiv normalization
+  -> verified result or process-local cache/policy
+  -> official OpenAI SDK Responses API + GPT-5.6 structured output
+  -> strict Zod contract -> separate consistency + canonical-ID checks
+  -> optional known slug through the closed static registry
+```
 
-Codex was used during development to build, review, and test the deterministic
-k-Means, A*, and Attention engines and their React learning experiences. There
-is no Codex SDK in the deployed application.
+Security and operational boundaries:
 
-At runtime, GPT-5.6 returns data only. The application does not generate,
-compile, import, or execute model-produced TSX, JavaScript, HTML, or scripts.
-`eval`, `new Function`, runtime Babel, model-controlled imports, and untrusted
-iframe execution remain prohibited.
+- The PDF and model response are untrusted data.
+- Paper-embedded instructions and prompt-like text are explicitly ignored.
+- A supported result must match exactly one of standard k-Means, standard A*,
+  or scaled dot-product attention.
+- Low-confidence, inconsistent, unknown, and unsupported results cannot select a
+  lab.
+- The API body is capped at 1 KB and responses use `Cache-Control: no-store`.
+- Errors are sanitized and never expose provider messages, prompts, keys, stack
+  traces, or response bodies.
+- The route allows 120 seconds, while one shared abort signal caps the entire
+  OpenAI operation—including at most one SDK retry—at 90 seconds.
+- Successful live results use a five-minute process-local cache.
+- Uncached live calls are limited, best effort, to five per hashed client in a
+  rolling 15-minute window.
+- The cache and limiter reset on cold starts and are not shared across serverless
+  instances; they are demo protection, not durable distributed abuse control.
+- There is no database, authentication, saved history, PDF upload, export, or
+  code editor.
 
-The integration follows the official [Responses API model guidance](https://developers.openai.com/api/docs/guides/latest-model?model=gpt-5.6)
-and [Structured Outputs guide](https://developers.openai.com/api/docs/guides/structured-outputs).
+See [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) for the full trust boundary and
+[docs/PRD.md](docs/PRD.md) for product requirements.
 
-## Quality checks
+## Codex and GPT-5.6 roles
+
+Codex was used during development to inspect the repository, implement and
+review the deterministic engines and interfaces, write tests, diagnose issues,
+and support verification. There is no Codex SDK in the deployed application.
+
+GPT-5.6 is used only for optional server-side structured paper analysis through
+the official OpenAI JavaScript SDK Responses API. It never authors a playground,
+algorithm, component, import path, or registry entry.
+
+The application does not generate, compile, import, or execute model-produced
+TSX, JavaScript, HTML, or scripts. `eval`, `new Function`, runtime Babel,
+model-controlled imports, and untrusted iframe execution are prohibited. There
+is no generated-code fallback for an unsupported paper.
+
+## Validation
+
+Run the release gates locally:
 
 ```bash
 npm run typecheck
@@ -128,25 +180,41 @@ npm run validate:schema
 npm run scan:forbidden
 ```
 
-With the application already running and a key configured, an explicitly
-opt-in live check is available as `npm run smoke:analyze -- <arxiv-id>`. It
-prints only a concise status, compatibility, and provenance summary; it is not
-part of normal test or build commands.
+With the app already running and a valid server key configured, the optional
+networked check is:
+
+```bash
+npm run smoke:analyze -- 1706.03762v7
+```
+
+This README does **not** claim that a keyed live smoke test has succeeded. Record
+and publish that result only after an actual run. The deterministic labs and
+verified `1706.03762` path do not depend on it.
+
+## Current limitations
+
+- Only three exact method families can produce a supported lab match.
+- The analyzer does not reproduce experiments, training, benchmarks, or proofs.
+- Live analysis depends on provider/PDF availability and a configured server key.
+- Process-local caching and limiting are not shared across deployment instances.
+- External deployment and video links remain placeholders until verified.
 
 ## Repository map
 
 ```text
-app/                       App Router pages and the Node analysis route
+app/                       App Router pages and Node analysis route
 components/playgrounds/    Trusted interactive laboratory views
 components/analysis/       Experimental analyzer UI
 data/golden-papers.ts      Typed catalog and source metadata
-lib/algorithms/            Deterministic, UI-independent engines
+lib/algorithms/            Deterministic UI-independent engines
 lib/arxiv/                 Strict arXiv input normalization
 lib/ai/                    Server-only analysis, validation, cache, and policy
 lib/playgrounds/           Closed trusted-engine registry
 prompts/                   Deployed prompt contract and retired prompt history
-docs/                      Product and architecture documentation
+schema/                    Synchronized structured-output schema artifact
+docs/                      Requirements, architecture, and submission draft
 ```
 
-See [docs/PRD.md](docs/PRD.md) for requirements and
-[docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) for the complete trust boundary.
+## License
+
+MIT License. See [LICENSE](LICENSE). Copyright (c) 2026 Joshua.

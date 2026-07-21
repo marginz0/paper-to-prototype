@@ -1,11 +1,16 @@
 const arxiv = process.argv[2];
 const apiKeyConfigured = Boolean(process.env.OPENAI_API_KEY?.trim());
+const expectedModel = process.env.OPENAI_MODEL?.trim() || "gpt-5.6";
+const expectedModelIsGpt56 = /^gpt-5\.6(?:$|-)/.test(expectedModel);
 
 if (!arxiv) {
-  console.error("Smoke failed: pass an arXiv ID, for example `npm run smoke:analyze -- 2207.09238`.");
+  console.error("Smoke failed: pass an arXiv ID, for example `npm run smoke:analyze -- 1706.03762v7`.");
   process.exitCode = 2;
 } else if (!apiKeyConfigured) {
   console.error("Smoke skipped: OPENAI_API_KEY is required for a real live analysis.");
+  process.exitCode = 2;
+} else if (!expectedModelIsGpt56) {
+  console.error("Smoke failed: OPENAI_MODEL must select GPT-5.6 for this integration gate.");
   process.exitCode = 2;
 } else {
   const siteUrl = process.env.SITE_URL?.trim() || "http://localhost:3000";
@@ -32,11 +37,23 @@ if (!arxiv) {
         console.error(`Smoke failed: HTTP ${response.status} / ${code}.`);
         process.exitCode = 1;
       } else {
-        const compatibility = payload.result?.analysis?.compatibility ?? "unknown";
-        const provenance = payload.result?.provenance ?? "unknown";
-        console.log(
-          `Smoke succeeded: ${payload.result?.canonicalArxivId ?? arxiv} -> ${compatibility} (${provenance}).`,
-        );
+        const result = payload.result;
+        const analysis = result?.analysis;
+        const isExpectedAttentionResult =
+          result?.provenance === "gpt-5.6" &&
+          result?.model === expectedModel &&
+          result?.canonicalArxivId === arxiv &&
+          analysis?.arxiv_id === arxiv &&
+          analysis?.detected_method_family === "scaled_dot_product_attention" &&
+          analysis?.compatibility === "supported" &&
+          analysis?.supported_lab_slug === "attention";
+
+        if (!isExpectedAttentionResult) {
+          console.error("Smoke failed: the sanitized structured result did not produce the expected live Attention match.");
+          process.exitCode = 1;
+        } else {
+          console.log(`Smoke succeeded: ${arxiv} -> attention (gpt-5.6, schema and consistency checks passed).`);
+        }
       }
     } catch {
       console.error(

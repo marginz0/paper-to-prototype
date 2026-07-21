@@ -1,1 +1,1 @@
-Paper-to-Prototype — Don’t just read the method. Run it. A three-cluster k-Means scatter plot with marked centroids.
+Paper to Prototype — Don’t just read the method. Run it. A three-cluster k-Means scatter plot with marked centroids.

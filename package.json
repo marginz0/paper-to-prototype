@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "description": "Interactive, verified learning laboratories for foundational research methods.",
+  "repository": "https://github.com/marginz0/paper-to-prototype",
   "scripts": {
     "dev": "next dev",
     "build": "next build",

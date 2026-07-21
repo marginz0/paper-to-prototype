@@ -1,8 +1,8 @@
-# Paper-to-Prototype Architecture
+# Paper to Prototype Architecture
 
 ## Decision summary
 
-Paper-to-Prototype has two deliberately separate runtime paths:
+Paper to Prototype has two deliberately separate runtime paths:
 
 1. three deterministic learning laboratories built from repository-owned
    TypeScript and React; and
@@ -117,7 +117,9 @@ configurable through the server-only `OPENAI_MODEL` variable. The request:
 - requests structured output from the Zod contract;
 - uses explicit medium reasoning;
 - sets `store: false`;
-- uses a bounded timeout and one SDK retry; and
+- gives the hosting function a 120-second maximum duration while one shared
+  abort signal caps the full provider operation, including at most one SDK
+  retry, at 90 seconds; and
 - checks explicit refusals and incomplete output.
 
 The runtime contract in `lib/ai/method-analysis.ts` is authoritative. Its
@@ -217,6 +219,11 @@ SITE_URL=         optional canonical deployment origin
 ```
 
 Gallery labs and the verified Attention analysis do not require a key.
+`SITE_URL` accepts a valid HTTP(S) origin or host name and is normalized to its
+origin. Invalid values are ignored. In production, a platform-provided Vercel
+production host may be used when `SITE_URL` is empty; localhost is only a
+development metadata fallback, so the repository never guesses a production
+URL.
 
 ## Verification gates
 

@@ -10,6 +10,7 @@ import type { ArxivPaperAnalysisResult } from "@/lib/ai/analyze-arxiv-paper";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
+export const maxDuration = 120;
 
 const analysisPolicy = createAnalysisRequestPolicy<ArxivPaperAnalysisResult>();
 const processLocalClientSalt = randomBytes(32);

@@ -56,6 +56,7 @@ function completed(outputParsed: unknown, output: unknown[] = []) {
 
 beforeEach(() => {
   vi.unstubAllEnvs();
+  vi.useRealTimers();
 });
 
 describe("verified analysis path", () => {
@@ -110,10 +111,60 @@ describe("live GPT-5.6 analysis", () => {
       file_url: liveArxiv.pdfUrl,
     });
     expect(JSON.stringify(body.input)).toContain(liveArxiv.id);
-    expect(requestOptions).toEqual({
+    expect(requestOptions).toMatchObject({
       timeout: DEFAULT_ANALYSIS_TIMEOUT_MS,
       maxRetries: ANALYSIS_MAX_RETRIES,
     });
+    expect(requestOptions.signal).toBeInstanceOf(AbortSignal);
+    expect(requestOptions.signal.aborted).toBe(false);
+  });
+
+  it("enforces one total wall-clock budget across the SDK retry lifecycle", async () => {
+    vi.useFakeTimers();
+    const timeoutMs = 75;
+    const parse = vi.fn(
+      (_body: unknown, _requestOptions: { signal: AbortSignal }) => {
+        void _body;
+        void _requestOptions;
+        return new Promise<never>(() => {});
+      },
+    );
+    const client = {
+      responses: { parse },
+    } as unknown as Pick<OpenAI, "responses">;
+
+    const analysis = analyzeArxivPaper(liveArxiv, {
+      apiKey: "test-key",
+      client,
+      timeoutMs,
+    });
+    const rejection = expect(analysis).rejects.toMatchObject({
+      code: "UPSTREAM_TIMEOUT",
+    });
+
+    await vi.advanceTimersByTimeAsync(timeoutMs - 1);
+    expect(parse.mock.calls[0]?.[1].signal.aborted).toBe(false);
+    await vi.advanceTimersByTimeAsync(1);
+    await rejection;
+
+    expect(parse).toHaveBeenCalledOnce();
+    expect(parse.mock.calls[0]?.[1]).toMatchObject({
+      timeout: timeoutMs,
+      maxRetries: ANALYSIS_MAX_RETRIES,
+    });
+    expect(parse.mock.calls[0]?.[1].signal.aborted).toBe(true);
+  });
+
+  it("never accepts a live-analysis budget above the 90-second production cap", async () => {
+    const { client, parse } = fakeClient(completed(liveAnalysis()));
+
+    await analyzeArxivPaper(liveArxiv, {
+      apiKey: "test-key",
+      client,
+      timeoutMs: DEFAULT_ANALYSIS_TIMEOUT_MS * 2,
+    });
+
+    expect(parse.mock.calls[0]?.[1].timeout).toBe(DEFAULT_ANALYSIS_TIMEOUT_MS);
   });
 
   it("preserves a valid unsupported result without forcing a lab mapping", async () => {
@@ -199,6 +250,7 @@ describe("live GPT-5.6 analysis", () => {
 describe("safe upstream error mapping", () => {
   it.each([
     ["APIConnectionTimeoutError", undefined, "UPSTREAM_TIMEOUT"],
+    ["APIUserAbortError", undefined, "UPSTREAM_TIMEOUT"],
     ["AbortError", undefined, "UPSTREAM_TIMEOUT"],
     ["RateLimitError", 429, "UPSTREAM_RATE_LIMIT"],
     ["InternalServerError", 500, "UPSTREAM_FAILURE"],

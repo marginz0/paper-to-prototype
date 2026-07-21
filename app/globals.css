@@ -2644,6 +2644,11 @@ input {
   line-height: 0.98;
 }
 
+.analysis-result-header h2:focus-visible {
+  outline: 2px solid #16856c;
+  outline-offset: 7px;
+}
+
 .analysis-authors {
   max-width: 900px;
   margin: 0 0 1.4rem;
@@ -2817,38 +2822,34 @@ input {
   border-top: 1px solid var(--line-strong);
 }
 
-.evidence-list details {
+.evidence-item {
   border-bottom: 1px solid var(--line-strong);
 }
 
-.evidence-list summary {
+.evidence-item-heading {
   display: grid;
   grid-template-columns: 34px minmax(0, 1fr) auto;
   align-items: center;
   gap: 0.8rem;
   min-height: 56px;
   padding: 0.65rem 0.8rem;
-  cursor: pointer;
-}
-
-.evidence-list summary:hover {
   background: var(--paper-deep);
 }
 
-.evidence-list summary span,
-.evidence-list summary em {
+.evidence-item-heading span,
+.evidence-item-heading em {
   color: var(--ink-soft);
   font-family: var(--mono);
   font-size: 0.56rem;
   font-style: normal;
 }
 
-.evidence-list summary strong {
+.evidence-item-heading strong {
   font-family: var(--serif);
   font-size: 0.9rem;
 }
 
-.evidence-list details > p {
+.evidence-item > p {
   margin: 0;
   padding: 0.3rem 3.25rem 1.25rem;
   color: var(--ink-soft);
@@ -3339,7 +3340,7 @@ input {
 
   .analyzer-input-row input {
     border-right: 1px solid var(--line-strong);
-    font-size: 0.68rem;
+    font-size: 1rem;
   }
 
   .analyzer-input-row .button {
@@ -3414,15 +3415,15 @@ input {
     text-align: left;
   }
 
-  .evidence-list summary {
+  .evidence-item-heading {
     grid-template-columns: 28px minmax(0, 1fr);
   }
 
-  .evidence-list summary em {
+  .evidence-item-heading em {
     grid-column: 2;
   }
 
-  .evidence-list details > p {
+  .evidence-item > p {
     padding: 0.25rem 0.8rem 1.15rem 2.85rem;
   }
 

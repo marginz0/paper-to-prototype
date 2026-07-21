@@ -2,7 +2,7 @@
 
 ## Product scope
 
-Paper-to-Prototype contains three verified laboratory families: k-Means, A*
+Paper to Prototype contains three verified laboratory families: k-Means, A*
 Search, and Scaled Dot-Product Attention. All three deterministic labs work
 without an API key.
 

@@ -81,50 +81,73 @@ export async function analyzeArxivPaper(
   }
 
   const model = options.model ?? process.env.OPENAI_MODEL ?? DEFAULT_OPENAI_MODEL;
-  const timeoutMs = options.timeoutMs ?? DEFAULT_ANALYSIS_TIMEOUT_MS;
+  const requestedTimeoutMs = options.timeoutMs ?? DEFAULT_ANALYSIS_TIMEOUT_MS;
+  const timeoutMs =
+    Number.isFinite(requestedTimeoutMs) && requestedTimeoutMs > 0
+      ? Math.min(requestedTimeoutMs, DEFAULT_ANALYSIS_TIMEOUT_MS)
+      : DEFAULT_ANALYSIS_TIMEOUT_MS;
   const client =
     options.client ??
     new OpenAI({
       apiKey,
       logLevel: "off",
     });
+  const totalBudgetController = new AbortController();
+  let totalBudgetExpired = false;
+  let totalBudgetTimer: ReturnType<typeof setTimeout> | undefined;
+  const totalBudgetDeadline = new Promise<never>((_resolve, reject) => {
+    totalBudgetTimer = setTimeout(() => {
+      totalBudgetExpired = true;
+      totalBudgetController.abort();
+      reject(
+        new AnalysisServiceError(
+          "UPSTREAM_TIMEOUT",
+          "The analysis provider did not respond before the timeout.",
+        ),
+      );
+    }, timeoutMs);
+  });
 
   try {
-    const response = await client.responses.parse(
-      {
-        model,
-        input: [
-          {
-            role: "system",
-            content: METHOD_ANALYSIS_SYSTEM_PROMPT,
+    const response = await Promise.race([
+      client.responses.parse(
+        {
+          model,
+          input: [
+            {
+              role: "system",
+              content: METHOD_ANALYSIS_SYSTEM_PROMPT,
+            },
+            {
+              role: "user",
+              content: [
+                {
+                  type: "input_text",
+                  text: createMethodAnalysisUserMessage(arxiv.id),
+                },
+                {
+                  type: "input_file",
+                  file_url: arxiv.pdfUrl,
+                },
+              ],
+            },
+          ],
+          text: {
+            format: zodTextFormat(MethodAnalysisSchema, "method_analysis"),
           },
-          {
-            role: "user",
-            content: [
-              {
-                type: "input_text",
-                text: createMethodAnalysisUserMessage(arxiv.id),
-              },
-              {
-                type: "input_file",
-                file_url: arxiv.pdfUrl,
-              },
-            ],
+          reasoning: {
+            effort: "medium",
           },
-        ],
-        text: {
-          format: zodTextFormat(MethodAnalysisSchema, "method_analysis"),
+          store: false,
         },
-        reasoning: {
-          effort: "medium",
+        {
+          timeout: timeoutMs,
+          maxRetries: ANALYSIS_MAX_RETRIES,
+          signal: totalBudgetController.signal,
         },
-        store: false,
-      },
-      {
-        timeout: timeoutMs,
-        maxRetries: ANALYSIS_MAX_RETRIES,
-      },
-    );
+      ),
+      totalBudgetDeadline,
+    ]);
 
     if (containsRefusal(response.output)) {
       throw new AnalysisServiceError(
@@ -172,7 +195,17 @@ export async function analyzeArxivPaper(
       model,
     };
   } catch (error) {
+    if (totalBudgetExpired) {
+      throw new AnalysisServiceError(
+        "UPSTREAM_TIMEOUT",
+        "The analysis provider did not respond before the timeout.",
+      );
+    }
     throw classifyAnalysisError(error);
+  } finally {
+    if (totalBudgetTimer !== undefined) {
+      clearTimeout(totalBudgetTimer);
+    }
   }
 }
 
@@ -212,6 +245,7 @@ function classifyAnalysisError(error: unknown): AnalysisServiceError {
   if (
     error instanceof OpenAI.APIConnectionTimeoutError ||
     getErrorName(error) === "APIConnectionTimeoutError" ||
+    getErrorName(error) === "APIUserAbortError" ||
     getErrorName(error) === "AbortError"
   ) {
     return new AnalysisServiceError(

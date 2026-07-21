@@ -93,7 +93,7 @@ export default function HomePage() {
             </p>
           </div>
         </div>
-        <div className="site-container learning-loop" aria-label="Paper-to-Prototype learning loop">
+        <div className="site-container learning-loop" aria-label="Paper to Prototype learning loop">
           <div>
             <span>01</span>
             <strong>Choose a method</strong>
@@ -135,8 +135,9 @@ export default function HomePage() {
           <p className="eyebrow">A deliberate boundary</p>
           <p>
             Each laboratory couples deterministic algorithm code with a trusted,
-            purpose-built visualization. Experimental analysis returns validated data
-            only; no model-generated code is compiled or executed.
+            purpose-built visualization. Experimental analysis returns schema-validated
+            data that may still be imperfect; no model-generated code is compiled or
+            executed.
           </p>
         </div>
       </section>

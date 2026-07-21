@@ -20,13 +20,13 @@ export default function AnalyzePage() {
         </div>
         <div className="analysis-intro-copy">
           <p>
-            Paper-to-Prototype can currently recognize three exact method families:
+            Paper to Prototype can currently recognize three exact method families:
             standard k-Means, standard A*, and scaled dot-product attention.
           </p>
           <p>
-            GPT-5.6 returns validated educational data only. Trusted application code
-            decides whether one of the existing laboratories is a faithful match—no
-            generated code is compiled or executed.
+            Live GPT-5.6 analysis is schema-validated but may still be imperfect.
+            Trusted application code decides whether one of the existing laboratories
+            is a faithful match—no generated code is compiled or executed.
           </p>
         </div>
       </section>

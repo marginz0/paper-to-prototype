@@ -40,7 +40,7 @@ type AnalyzerState =
 export function ArxivAnalyzer() {
   const [input, setInput] = useState("");
   const [state, setState] = useState<AnalyzerState>({ kind: "idle" });
-  const resultRef = useRef<HTMLDivElement>(null);
+  const resultRef = useRef<HTMLHeadingElement>(null);
   const errorRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -181,9 +181,10 @@ export function ArxivAnalyzer() {
           <div className="analyzer-boundary-note">
             <span aria-hidden="true">i</span>
             <p>
-              <strong>Experimental matcher, trusted laboratories.</strong>
-              Analysis may be imperfect. A match only opens repository-owned,
-              deterministic visualization code.
+              <strong>Experimental matcher, trusted laboratories.</strong>{" "}
+              Live GPT-5.6 output is schema-validated, not automatically fact-checked.
+              Only the reviewed sample is labeled Verified analysis, and every match
+              opens repository-owned deterministic visualization code.
             </p>
           </div>
         </div>
@@ -204,7 +205,7 @@ export function ArxivAnalyzer() {
             </li>
             <li>
               <span>03</span>
-              <div><strong>Validate</strong><p>Parse one strict schema and enforce match consistency.</p></div>
+              <div><strong>Validate</strong><p>Check structure and match consistency; this does not fact-check a live analysis.</p></div>
             </li>
             <li>
               <span>04</span>
@@ -275,7 +276,7 @@ export function ArxivAnalyzer() {
 }
 
 const AnalysisResultView = forwardRef<
-  HTMLDivElement,
+  HTMLHeadingElement,
   {
     readonly result: ArxivPaperAnalysisResult;
     readonly onAnalyzeAnother: () => void;
@@ -294,7 +295,7 @@ const AnalysisResultView = forwardRef<
   const supportedLabLabel = supportedSlug ? labLabel(supportedSlug) : null;
 
   return (
-    <div ref={ref} className="analysis-result" tabIndex={-1} aria-labelledby="analysis-result-title">
+    <div className="analysis-result" aria-labelledby="analysis-result-title">
       <header className="analysis-result-header">
         <div className="analysis-result-badges">
           <span className={`provenance-badge provenance-${result.provenance}`}>
@@ -312,7 +313,9 @@ const AnalysisResultView = forwardRef<
           </span>
         </div>
         <p className="eyebrow">Structured method record / {analysis.arxiv_id}</p>
-        <h2 id="analysis-result-title">{analysis.paper_title}</h2>
+        <h2 ref={ref} id="analysis-result-title" tabIndex={-1}>
+          {analysis.paper_title}
+        </h2>
         <p className="analysis-authors">{analysis.authors.join(" · ")}</p>
         <a className="text-link" href={result.recordUrl} target="_blank" rel="noreferrer">
           View original arXiv record <span aria-hidden="true">↗</span>
@@ -376,14 +379,14 @@ const AnalysisResultView = forwardRef<
         </div>
         <div className="evidence-list">
           {analysis.evidence.map((item, index) => (
-            <details key={`${item.paper_section}-${index}`} open={index === 0}>
-              <summary>
+            <article className="evidence-item" key={`${item.paper_section}-${index}`}>
+              <div className="evidence-item-heading">
                 <span>{String(index + 1).padStart(2, "0")}</span>
                 <strong>{item.paper_section}</strong>
                 <em>{item.page_number === null ? "Page not identified" : `Page ${item.page_number}`}</em>
-              </summary>
+              </div>
               <p>{item.paraphrased_support}</p>
-            </details>
+            </article>
           ))}
         </div>
       </section>
