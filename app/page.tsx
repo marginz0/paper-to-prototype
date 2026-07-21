@@ -1,7 +1,21 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 
 import { GalleryCard } from "@/components/GalleryCard";
 import { goldenPapers } from "@/data/golden-papers";
+
+export const metadata: Metadata = {
+  alternates: {
+    canonical: "/",
+  },
+  openGraph: {
+    type: "website",
+    siteName: "Paper to Prototype",
+    title: "Paper to Prototype",
+    description: "Don’t just read the method. Run it.",
+    url: "/",
+  },
+};
 
 const previewPoints = [
   { left: 16, top: 64, cluster: 0 },
