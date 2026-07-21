@@ -42,14 +42,19 @@ function MethodGlyph({ slug }: Pick<GoldenPaper, "slug">) {
 }
 
 export function GalleryCard({ paper, index }: GalleryCardProps) {
-  const isAvailable = paper.status === "available";
+  const labRoutes = {
+    kmeans: "/lab/kmeans",
+    astar: "/lab/astar",
+    attention: "/lab/attention",
+  } as const;
+
   const cardContent = (
     <>
       <div className="card-topline">
         <span>Lab {String(index + 1).padStart(2, "0")}</span>
         <span className={`status-label status-${paper.status}`}>
           <span className="status-dot" aria-hidden="true" />
-          {isAvailable ? "Verified & ready" : "Planned"}
+          Verified &amp; ready
         </span>
       </div>
 
@@ -63,24 +68,15 @@ export function GalleryCard({ paper, index }: GalleryCardProps) {
         <p className="card-summary">{paper.learningGoal}</p>
       </div>
 
-      <div className="card-action" aria-hidden={!isAvailable}>
-        {isAvailable ? (
-          <>
-            Open laboratory <span aria-hidden="true">→</span>
-          </>
-        ) : (
-          "In the research queue"
-        )}
+      <div className="card-action">
+        Open laboratory <span aria-hidden="true">→</span>
       </div>
     </>
   );
 
-  return isAvailable ? (
-    <Link className="gallery-card gallery-card-active" href="/lab/kmeans">
+  return (
+    <Link className="gallery-card gallery-card-active" href={labRoutes[paper.slug]}>
       {cardContent}
     </Link>
-  ) : (
-    <article className="gallery-card gallery-card-planned">{cardContent}</article>
   );
 }
-

@@ -10,7 +10,9 @@
     "lint": "eslint . --max-warnings 0",
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
-    "test:watch": "vitest"
+    "test:watch": "vitest",
+    "validate:schema": "node scripts/validate-schema.mjs",
+    "scan:forbidden": "node scripts/check-forbidden-runtime.mjs"
   },
   "dependencies": {
     "next": "15.5.9",

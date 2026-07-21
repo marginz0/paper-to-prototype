@@ -2,151 +2,158 @@
 
 ## Decision summary
 
-Paper-to-Prototype is a Next.js 15 App Router application with trusted,
-repository-owned laboratory engines. React renders the experience; pure
-TypeScript modules perform the algorithms. No generated code crosses the
-runtime boundary.
+Paper-to-Prototype is a Next.js 15 App Router application with three trusted,
+repository-owned learning laboratories. React owns interaction and rendering;
+pure strict-TypeScript modules own the algorithms. A closed static registry is
+the only bridge from paper metadata to a playground component.
 
-Milestone 1 is entirely local and deterministic. It has no database,
-authentication, model call, paper upload, or server API requirement.
+Milestone 2 remains local and deterministic. It has no database,
+authentication, model call, paper upload, API route, or generated-code path.
 
-## System boundaries
+## Runtime boundary
 
 ```text
-Typed lab catalog
-       |
-       v
-Next.js route ----> trusted playground component ----> SVG/Recharts view
-                              |
-                              v
-                    pure deterministic algorithm
+typed paper catalog
+        |
+        v
+safe /lab/[slug] route
+        |
+        v
+closed trusted registry ---- unknown slug/engine ----> not found
+        |
+        v
+statically imported React playground
+        |
+        v
+pure deterministic algorithm state machine
+        |
+        v
+repository-owned SVG / HTML / CSS visualization
 ```
 
-The route resolves a safe slug through the typed laboratory catalog. A trusted
-registry selects a component already compiled with the application. The
-component owns presentation and playback state; it calls a pure algorithm
-module for state transitions. SVG or Recharts receives ordinary serializable
-data.
+No request value becomes an import path. The route resolves a slug against a
+closed union, then the registry selects one of three components already compiled
+with the application.
 
-## Milestone 1 structure
+## Repository ownership
 
 ```text
 app/
-  layout.tsx                 Shared document layout
-  page.tsx                   Laboratory gallery
-  loading.tsx                App loading state
-  not-found.tsx              Global unknown-route state
+  layout.tsx                       shared document shell
+  page.tsx                         verified laboratory gallery
+  loading.tsx                      route loading state
+  not-found.tsx                    unknown-route state
   lab/[slug]/
-    page.tsx                 Safe laboratory route resolution
-    loading.tsx              Laboratory loading state
+    page.tsx                       safe route and static engine dispatch
+    loading.tsx                    laboratory loading state
 components/
-  header.tsx                 Reusable product header
-  gallery-card.tsx           Available/planned laboratory card
+  GalleryCard.tsx                  typed active gallery card
+  SiteHeader.tsx / SiteFooter.tsx  shared chrome
   playgrounds/
-    kmeans-playground.tsx    k-Means controls, playback, and SVG
+    KMeansPlayground.tsx           k-Means UI and playback state
+    AStarPlayground.tsx            grid UI, editing, and playback state
+    AttentionPlayground.tsx        matrix phases and heatmap interaction
 data/
-  golden-papers.ts           Typed three-laboratory catalog
+  golden-papers.ts                 closed catalog and source links
 lib/
   algorithms/
-    kmeans.ts                Seeded data and pure state transitions
-prompts/                     Future structured-analysis material only
-schema/                      Future model-output schema
+    kmeans.ts                      assignment/update state machine
+    astar.ts                       search state machine
+    attention.ts                   matrix pipeline and phase state
+  playgrounds/registry.ts          slug-to-engine allowlist
+prompts/ and schema/                later structured-analysis contracts
 ```
 
-Exact filenames may vary slightly during implementation, but these ownership
-boundaries should not.
+Algorithm modules do not import React, DOM APIs, or browser timers. Playground
+components call the same single-step operation for manual and timed playback.
+The browser stores only ephemeral interaction state.
 
-## k-Means state model
+## Deterministic algorithm contracts
 
-The k-Means engine is independent from React. Its public operations cover:
+### k-Means
 
-- seeded creation of a fixed two-dimensional point set;
-- deterministic centroid initialization for each supported `k`;
-- assignment of each point to its nearest centroid;
-- recomputation of each centroid from its assigned points; and
-- inertia calculation as the sum of squared distances from points to their
-  assigned centroids.
+A seeded PRNG creates the 2D dataset and deterministic centroids for each
+supported `k`. State alternates between assignment and centroid update. Reset or
+a `k` change recreates the exact starting state. No algorithm calls
+`Math.random()`.
 
-The UI advances a two-phase state machine:
+### A* Search
+
+The board is an explicit rectangular value with start, goal, and wall cells.
+Each step chooses one open node using stable ordering, closes it, and evaluates
+four-directional neighbors. The state exposes open/closed sets, current node,
+predecessors, scores, final path, status, and metrics. Manhattan distance is
+weighted only in priority:
 
 ```text
-assignment --Step--> centroid update --Step--> assignment
+f(n) = g(n) + w × h(n)
 ```
 
-An iteration is complete after the centroid-update phase. Play invokes the same
-single-step transition on a timer; it must not maintain a second algorithm path.
-Changing `k` or pressing Reset reconstructs state from the same seed and
-deterministic initializer. `Math.random()` is not allowed in algorithm code.
+Weight 0 is uniform-cost search; weight 1 is standard Manhattan A*; values above
+1 are weighted A*. Restart rebuilds search state while retaining the edited
+board. Reset Board restores the canonical preset.
 
-The browser owns ephemeral playback state only. No state is persisted.
+### Scaled Dot-Product Attention
+
+Fixed token vectors and projection matrices make the entire pipeline
+reproducible:
+
+```text
+Q = XWq
+K = XWk
+V = XWv
+scores = QKᵀ
+logits = (scores / √dₖ) / temperature
+weights = rowSoftmax(logits)
+output = weights × V
+```
+
+The comparison control may omit the `√dₖ` divisor for education, but the default
+and canonical calculation is scaled. Temperature changes only the softmax
+logits. The demonstration is deliberately small and untrained; it does not make
+claims about learned linguistic relationships.
 
 ## Rendering and accessibility
 
-- Laboratory views use repository-owned SVG or Recharts components.
-- Plot marks, centroids, and current phase use more than color alone where
-  practical.
-- Every control has a programmatic label and visible focus treatment.
-- Motion is restrained and must respect reduced-motion preferences where
-  possible.
-- Responsive layout supports an approximately 390 px viewport without hiding
-  required controls or metrics.
-
-## Trusted registry
-
-`data/golden-papers.ts` is the catalog and status source of truth. Slugs are a
-closed union: `kmeans`, `astar`, and `attention`. Only `kmeans` is `available`
-in Milestone 1. A route must not infer an import path from a URL or dynamically
-execute a module named by input.
-
-When additional laboratories are implemented, a trusted registry will map a
-known slug to a statically imported playground. Catalog status changes only
-after that playground is verified.
+- State is communicated with text, symbols, outlines, or patterns in addition
+  to color.
+- Every interactive element has a visible label or accessible name and inherits
+  the global focus-visible treatment.
+- Grid cells are button-like touch targets; the attention heatmap exposes cell
+  values and token relationships programmatically.
+- Desktop uses a control/sidebar workbench. Mobile stacks controls and
+  visualizations without page-level horizontal overflow.
+- All nonessential transitions collapse under `prefers-reduced-motion: reduce`.
 
 ## Future GPT-5.6 analysis boundary
 
-The experimental arXiv flow belongs to a later milestone. Its intended data
-flow is:
+The experimental arXiv flow belongs to a later milestone:
 
 ```text
 bounded paper text
-       |
-       v
+        |
+        v
 GPT-5.6 structured analysis (untrusted JSON)
-       |
-       v
+        |
+        v
 schema validation + allowlist checks
-       |
-       v
+        |
+        v
 trusted method-family mapping + bounded configuration
-       |
-       v
+        |
+        v
 existing algorithm and visualization engine
 ```
 
-Model output is never treated as source code. Trusted application code—not the
-model—selects the visualization engine. Unsupported method families fail closed
-with an explanatory state rather than falling back to code generation.
-
-The following are prohibited in every milestone:
-
-- dynamically generated or executed TSX;
-- `eval`, `new Function`, runtime Babel, or arbitrary script execution;
-- model-controlled module paths or component imports; and
-- inserting untrusted HTML or script content into an iframe or the main page.
-
-There is no OpenAI dependency or API route in Milestone 1.
+Trusted code—not the model—selects an engine. Unsupported method families fail
+closed. The following remain prohibited: generated/executed TSX, `eval`,
+`new Function`, runtime Babel, arbitrary script execution, model-controlled
+module paths, and untrusted script or iframe content.
 
 ## Verification gates
 
-Before review, run:
-
-```bash
-npm run typecheck
-npm run test
-npm run lint
-npm run build
-```
-
-Then inspect `/` and `/lab/kmeans` in a browser at mobile and desktop widths,
-exercise all controls, and confirm that the console remains clear.
-
+Before review, run strict typecheck, all focused algorithm tests, ESLint, and a
+production build. Parse the future extraction schema and scan deployed source
+for forbidden runtime patterns. Then exercise `/`, all three laboratory routes,
+and an unknown slug at desktop and mobile widths while checking overflow,
+accessibility, interaction, and the browser console.

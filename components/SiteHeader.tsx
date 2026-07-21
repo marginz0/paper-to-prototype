@@ -16,10 +16,9 @@ export function SiteHeader() {
         </Link>
         <nav className="header-nav" aria-label="Primary navigation">
           <Link href="/#laboratories">Laboratories</Link>
-          <span className="edition-label">Build 01</span>
+          <span className="edition-label">Build 02</span>
         </nav>
       </div>
     </header>
   );
 }
-

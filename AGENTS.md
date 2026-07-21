@@ -3,9 +3,9 @@
 ## Scope
 
 Paper-to-Prototype is an education product with three verified laboratory
-families: k-Means, A* Search, and Scaled Dot-Product Attention. Milestone 1
-implements only k-Means. Keep A* and Attention represented as planned; do not
-begin those engines without a later milestone request.
+families: k-Means, A* Search, and Scaled Dot-Product Attention. Milestone 2
+implements and verifies the complete three-laboratory gallery while preserving
+the accepted Milestone 1 k-Means experience.
 
 The current user brief and `docs/PRD.md` override legacy root planning files
 where they conflict.
@@ -19,8 +19,8 @@ where they conflict.
 - Resolve labs through an explicit typed registry. Never derive an import path
   from request or model input.
 - Do not add a database, authentication, PDF upload, export, saved history, or a
-  code editor in Milestone 1.
-- Do not add OpenAI API routes, SDKs, or client calls in Milestone 1.
+  code editor in this milestone.
+- Do not add OpenAI API routes, SDKs, or client calls in this milestone.
 - Do not generate or execute TSX. `eval`, `new Function`, runtime Babel,
   arbitrary scripts, model-controlled dynamic imports, and untrusted iframe
   content are prohibited.
@@ -41,8 +41,8 @@ never turn it into executable code.
 - Preserve unrelated user changes.
 - Prefer small, typed modules and explicit state transitions.
 - Give controls accessible names, keyboard focus styles, and readable states.
-- Check the gallery and k-Means route near 390 px and at desktop width.
-- Do not claim that planned functionality works.
+- Check the gallery and all three routes near 390 px and at desktop width.
+- Keep the mathematical Attention example clearly labeled as untrained.
 
 Before handing off implementation work, run:
 

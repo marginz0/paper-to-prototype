@@ -4,115 +4,109 @@
 
 Paper-to-Prototype is an education product that turns the algorithmic method
 inside a research paper into a grounded, interactive learning laboratory.
-Learners manipulate real parameters and observe the method step by step instead
-of receiving another static paper summary.
+Learners manipulate real parameters and observe each method step by step.
 
 **Tagline:** “Don’t just read the method. Run it.”
 
 ## Problem
 
-Research papers often describe computational methods through dense prose,
-notation, and static figures. Even when a reader understands each sentence, it
-can be difficult to build an intuition for how state changes, which parameters
-matter, and why the method converges or finds a solution. A small, faithful
-interactive system can make those mechanics visible without pretending to
-replace the paper.
+Papers describe computational methods through precise prose, notation, and
+static figures. A reader can understand the words without building intuition
+for the transitions between states. A small faithful laboratory makes those
+transitions inspectable without pretending to replace the paper.
 
 ## Product principles
 
-1. **Mechanics before summary.** The main experience exposes the actual method,
-   not a chat response about it.
-2. **Grounded and deterministic.** Every displayed transition comes from trusted
-   algorithm code and reproducible inputs.
-3. **Explain the current step.** Controls, state, and plain-language explanation
-   remain synchronized.
-4. **Honest status.** Planned labs are visible as planned and never presented as
-   complete.
-5. **Safe by construction.** Model output may become data, never executable UI
-   code.
+1. **Mechanics before summary.** The primary experience exposes the real method.
+2. **Grounded and deterministic.** Trusted code produces every displayed state.
+3. **Explain the current step.** Controls, metrics, and prose remain synchronized.
+4. **Verified means complete.** A gallery card becomes active only after its
+   algorithm, route, controls, tests, and responsive behavior are verified.
+5. **Safe by construction.** Future model output may be data, never executable UI.
+6. **Accuracy before spectacle.** Motion is restrained and educational claims
+   remain within what each small demonstration actually shows.
 
-## Final MVP scope
+## Verified MVP collection
 
-The product catalog contains exactly three verified laboratories:
-
-| Laboratory | Core learning objective | Delivery status |
+| Laboratory | Core learning objective | Delivery |
 | --- | --- | --- |
-| k-Means clustering | Connect assignment and centroid-update phases to cluster movement and inertia | Milestone 1 |
-| A* Search | Observe frontier expansion and the effect of cost plus heuristic | Planned milestone |
-| Scaled Dot-Product Attention | Observe query-key scores, scaling, softmax, and value mixing | Planned milestone |
+| k-Means clustering | Connect assignment and centroid updates to geometry and inertia | Milestone 1 |
+| A* Search | Inspect frontier expansion and the balance of cost and heuristic | Milestone 2 |
+| Scaled Dot-Product Attention | Follow projection, scoring, scaling, softmax, and value mixing | Milestone 2 |
 
-## Milestone 1 requirements
+## Milestone 2 requirements
 
-### Landing page
+### Shared gallery and routing
 
-- Present the tagline and a concise explanation of the learning problem.
-- Display all three laboratories from one typed data source.
-- Link the k-Means card to its working laboratory.
-- Mark A* Search and Attention as planned without a misleading action.
-- Use no invented metrics, testimonials, or claims.
+- All three cards are active and resolve through one typed catalog.
+- `/lab/kmeans`, `/lab/astar`, and `/lab/attention` load directly.
+- Unknown slugs render the application not-found state.
+- Every lab links to its original paper and uses short original explanatory copy.
+- A static registry selects only compiled, repository-owned playgrounds.
 
 ### k-Means laboratory
 
-- Use a deterministic seeded two-dimensional dataset.
-- Support `k` values from 2 through 5.
-- Advance one phase per step: cluster assignment, then centroid update.
-- Calculate inertia from the current assignments and centroids.
-- Provide Step, Play/Pause, Reset, `k`, and animation-speed controls.
-- Reset reproducibly whenever the learner resets or changes `k`.
-- Show the current phase, iteration, inertia, and a phase-specific explanation.
-- Render an accessible SVG scatter plot with distinguishable points and clearly
-  marked centroids.
-- Work well at approximately 390 px viewport width and at a normal desktop
-  width.
+Milestone 1 remains unchanged in behavior: a reproducible seeded 2D dataset,
+`k` from 2 through 5, alternating assignment/update phases, inertia, playback,
+single-step control, speed, and exact reset.
 
-### Application foundation
+### A* Search laboratory
 
-- Use Next.js 15 App Router, React, strict TypeScript, and Tailwind CSS.
-- Provide `/` and `/lab/[slug]` routes plus appropriate loading and not-found
-  states.
-- Keep deterministic algorithm code independent of React components.
-- Provide reusable layout, header, and gallery-card components.
-- Provide typecheck, test, lint, build, development, and production scripts.
+- Use a rectangular grid, four-directional movement, Manhattan distance, and
+  deterministic tie-breaking.
+- Maintain explicit open and closed sets, current node, predecessor map, and
+  final path in a step-based state machine.
+- Expose heuristic weight from 0 through 2. Explain that 0 is uniform-cost
+  search, 1 is standard A*, and values above 1 can sacrifice optimality.
+- Display `f(n) = g(n) + w × h(n)` plus current f, g, and h, nodes expanded,
+  frontier size, and path length/cost.
+- Include a deterministic preset, editing for walls/start/goal, mobile tap,
+  Play/Pause, Step, Restart Search, Reset Board, and animation speed.
+- Distinguish board states with labels, marks, or shape as well as color.
+- Correctly handle a path, no path, start equals goal, and reset.
 
-## Explicit non-goals for Milestone 1
+### Scaled Dot-Product Attention laboratory
 
-- Implementing the A* or Attention laboratory
-- Calling OpenAI or any other model API
-- Fetching or analyzing arXiv papers
-- PDF upload
-- Generating or executing TSX, JavaScript, or other model-produced code
-- `eval`, `new Function`, runtime Babel, dynamic component compilation, or
-  arbitrary script execution
-- Authentication, database persistence, saved history, export, or a code editor
-- shadcn setup unless a later, concrete component requirement justifies it
+- Start with fixed toy token vectors and fixed projection matrices.
+- Compute `Q = XWq`, `K = XWk`, `V = XWv`, `QKᵀ`, division by `√dₖ`,
+  temperature-controlled row softmax, and `attention weights × V`.
+- Step through six named phases with Previous, Next, and Reset controls.
+- Default to scaled attention and offer an explicit scaled/unscaled comparison.
+- Provide temperature from approximately 0.4 through 2 with immediate updates.
+- Render a labeled attention heatmap; cell selection reveals the query, key,
+  raw score, scaled score, and final weight.
+- Show the selected row’s most-attended key, approximate sum of 1, and entropy.
+- State clearly that this is a deterministic mathematical toy, not a trained
+  language model or evidence of genuine linguistic understanding.
+
+### Responsive and accessibility quality
+
+- The landing page and every laboratory support 1440 × 1000 and 390 × 844.
+- Controls remain usable by keyboard and touch with visible focus indicators.
+- Required information does not rely on color alone.
+- Labels remain readable without horizontal page overflow.
+- Reduced-motion preferences suppress nonessential transitions.
+- Browser consoles remain free of errors and warnings.
+
+## Explicit non-goals
+
+- OpenAI SDK or API routes
+- arXiv fetching or PDF processing
+- authentication, database persistence, saved history, or export
+- code editor, shadcn setup, or unrelated features
+- generated or executed TSX, `eval`, `new Function`, runtime Babel, arbitrary
+  scripts, model-controlled imports, or untrusted iframe content
 
 ## Later experimental arXiv analysis
 
-In a later milestone, GPT-5.6 may analyze paper text and return structured JSON
-matching `schema/extraction_schema.json`. This flow is deliberately data-only:
+In a later milestone, GPT-5.6 may return structured JSON matching
+`schema/extraction_schema.json`. The server will validate the response, reject
+unsupported values, and map an allowlisted method family to an existing trusted
+engine with bounded configuration. Model output will never be source code.
 
-1. The server obtains a bounded portion of paper text.
-2. GPT-5.6 returns a structured method description.
-3. Trusted code validates the response against the schema and rejects unknown
-   or unsupported values.
-4. Trusted application code maps a supported method family to an existing
-   visualization engine and constructs a bounded configuration.
-5. The browser runs only repository-owned algorithm and visualization code.
+## Milestone 2 acceptance criteria
 
-This later flow does not allow the model to generate a React component, choose
-an arbitrary module, or provide executable code.
-
-## Milestone 1 acceptance criteria
-
-Milestone 1 is ready for review when:
-
-- the landing page is coherent at mobile and desktop sizes;
-- `/lab/kmeans` loads directly and presents the complete laboratory;
-- assignment and centroid update are visibly distinct single-step phases;
-- Step, Play, Pause, Reset, `k`, and speed controls work;
-- a `k` change creates the same initial state every time for that `k`;
-- the explanation and metrics match the displayed algorithm state;
-- focused k-Means tests pass;
-- lint, strict typecheck, and production build pass; and
-- browser inspection finds no console errors.
-
+Milestone 2 is ready for review when all three direct routes and the gallery are
+coherent, every required control works, each pure engine’s focused tests pass,
+strict typecheck/lint/build pass, schema and forbidden-pattern checks pass, and
+desktop/mobile browser inspection finds no overflow or console errors.

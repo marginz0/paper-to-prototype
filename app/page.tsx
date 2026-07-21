@@ -119,8 +119,8 @@ export default function HomePage() {
             <h2>Three methods. One careful lab at a time.</h2>
           </div>
           <p>
-            k-Means is ready to run. A* Search and Scaled Dot-Product Attention
-            are represented here as the next verified laboratories—not as finished demos.
+            Move from geometric clustering to informed search and the mechanics of
+            attention. Every laboratory runs verified, repository-owned algorithm code.
           </p>
         </div>
         <div className="gallery-grid">
@@ -142,4 +142,3 @@ export default function HomePage() {
     </main>
   );
 }
-

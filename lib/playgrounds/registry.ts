@@ -1,10 +1,10 @@
 import type { LabSlug } from "@/data/golden-papers";
 
-export type TrustedPlaygroundEngine = "kmeans-v1";
+export type TrustedPlaygroundEngine = "kmeans-v1" | "astar-v1" | "attention-v1";
 
 export interface PlaygroundRegistryEntry {
-  readonly engine: TrustedPlaygroundEngine | null;
-  readonly status: "verified" | "planned";
+  readonly engine: TrustedPlaygroundEngine;
+  readonly status: "verified";
 }
 
 /**
@@ -13,11 +13,10 @@ export interface PlaygroundRegistryEntry {
  */
 export const playgroundRegistry = {
   kmeans: { engine: "kmeans-v1", status: "verified" },
-  astar: { engine: null, status: "planned" },
-  attention: { engine: null, status: "planned" },
+  astar: { engine: "astar-v1", status: "verified" },
+  attention: { engine: "attention-v1", status: "verified" },
 } as const satisfies Record<LabSlug, PlaygroundRegistryEntry>;
 
 export function getPlaygroundRegistryEntry(slug: LabSlug): PlaygroundRegistryEntry {
   return playgroundRegistry[slug];
 }
-
